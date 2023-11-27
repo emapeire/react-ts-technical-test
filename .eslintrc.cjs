@@ -18,5 +18,13 @@ module.exports = {
       { allowConstantExport: true }
     ],
     'react/jsx-no-target-blank': [2, { allowReferrer: false }]
-  }
+  },
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      parserOptions: {
+        project: './tsconfig.json'
+      }
+    }
+  ]
 }
