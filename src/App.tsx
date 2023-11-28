@@ -23,6 +23,11 @@ function App() {
       })
     : users
 
+  const handleDelete = (email: string) => {
+    const filteredUsers = users.filter((user) => user.email !== email)
+    setUsers(filteredUsers)
+  }
+
   useEffect(() => {
     fetch(`${API_URL}`)
       .then((res) => res.json() as Promise<APIResults>)
@@ -46,7 +51,11 @@ function App() {
         </button>
       </header>
       <main>
-        <UserList showColors={showColors} users={sortedUsers} />
+        <UserList
+          deleteUser={handleDelete}
+          showColors={showColors}
+          users={sortedUsers}
+        />
       </main>
     </div>
   )
