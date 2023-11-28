@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { API_URL } from './constants'
 import { type APIResults, type Users } from './types'
@@ -19,20 +19,23 @@ function App() {
     setSortByCountry((prevState) => !prevState)
   }
 
-  const filteredUsersByCountry =
-    filterCountry !== null && filterCountry.length > 0
+  const filteredUsersByCountry = useMemo(() => {
+    return filterCountry !== null && filterCountry.length > 0
       ? users.filter((user) =>
           user.location.country
             .toLowerCase()
             .includes(filterCountry.toLowerCase())
         )
       : users
+  }, [filterCountry, users])
 
-  const sortedUsers = sortByCountry
-    ? [...filteredUsersByCountry].sort((a, b) => {
-        return a.location.country.localeCompare(b.location.country)
-      })
-    : filteredUsersByCountry
+  const sortedUsers = useMemo(() => {
+    return sortByCountry
+      ? [...filteredUsersByCountry].sort((a, b) => {
+          return a.location.country.localeCompare(b.location.country)
+        })
+      : filteredUsersByCountry
+  }, [sortByCountry, filteredUsersByCountry])
 
   const handleDelete = (email: string) => {
     const filteredUsers = users.filter((user) => user.email !== email)
