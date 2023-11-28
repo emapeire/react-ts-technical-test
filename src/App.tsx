@@ -19,11 +19,20 @@ function App() {
     setSortByCountry((prevState) => !prevState)
   }
 
+  const filteredUsersByCountry =
+    filterCountry !== null && filterCountry.length > 0
+      ? users.filter((user) =>
+          user.location.country
+            .toLowerCase()
+            .includes(filterCountry.toLowerCase())
+        )
+      : users
+
   const sortedUsers = sortByCountry
-    ? [...users].sort((a, b) => {
+    ? [...filteredUsersByCountry].sort((a, b) => {
         return a.location.country.localeCompare(b.location.country)
       })
-    : users
+    : filteredUsersByCountry
 
   const handleDelete = (email: string) => {
     const filteredUsers = users.filter((user) => user.email !== email)
