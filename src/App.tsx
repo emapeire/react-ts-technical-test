@@ -8,6 +8,7 @@ function App() {
   const [users, setUsers] = useState<Users[]>([])
   const [showColors, setShowColors] = useState(false)
   const [sortByCountry, setSortByCountry] = useState(false)
+  const [filterCountry, setFilterCountry] = useState<string | null>(null)
   const originalUsers = useRef<Users[]>([])
 
   const toggleColor = () => {
@@ -56,6 +57,17 @@ function App() {
           {sortByCountry ? 'Unsort by country' : 'Sort by country'}
         </button>
         <button onClick={handleReset}>Reset users</button>
+        <input
+          style={{
+            borderRadius: '10px',
+            border: '1px solid #ccc',
+            textIndent: '10px'
+          }}
+          placeholder='Filter by country'
+          onChange={(e) => {
+            setFilterCountry(e.target.value)
+          }}
+        />
       </header>
       <main>
         <UserList
