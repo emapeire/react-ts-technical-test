@@ -24,7 +24,10 @@ export default function UserList({ users, showColors, deleteUser }: Props) {
             return (
               <tr key={user.email}>
                 <td>
-                  <img src={user.picture.thumbnail} />
+                  <img
+                    style={{ display: 'block', margin: '0 auto' }}
+                    src={user.picture.thumbnail}
+                  />
                 </td>
                 <td>{user.name.first}</td>
                 <td>{user.name.last}</td>
