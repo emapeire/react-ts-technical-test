@@ -20,7 +20,7 @@ export default function App() {
     setSorting(sorting === SortBy.Country ? SortBy.None : SortBy.Country)
   }
 
-  const filteredUsersByCountry = useMemo(() => {
+  const filteredUsers = useMemo(() => {
     return filterCountry !== null && filterCountry.length > 0
       ? users.filter((user) =>
           user.location.country
@@ -31,12 +31,19 @@ export default function App() {
   }, [filterCountry, users])
 
   const sortedUsers = useMemo(() => {
-    return sorting === SortBy.Country
-      ? [...filteredUsersByCountry].sort((a, b) => {
-          return a.location.country.localeCompare(b.location.country)
-        })
-      : filteredUsersByCountry
-  }, [sorting, filteredUsersByCountry])
+    if (sorting === SortBy.None) return filteredUsers
+
+    const compareProperties: Record<string, (user: Users) => string> = {
+      [SortBy.Country]: (user) => user.location.country,
+      [SortBy.FirstName]: (user) => user.name.first,
+      [SortBy.LastName]: (user) => user.name.last
+    }
+
+    return [...filteredUsers].sort((a, b) => {
+      const extractProperty = compareProperties[sorting]
+      return extractProperty(a).localeCompare(extractProperty(b))
+    })
+  }, [sorting, filteredUsers])
 
   const handleDelete = (email: string) => {
     const filteredUsers = users.filter((user) => user.email !== email)
