@@ -70,10 +70,10 @@ export default function App() {
         <button onClick={toggleColor}>
           {showColors ? 'Uncolor rows' : 'Color rows'}
         </button>
+        <button onClick={handleReset}>Reset users</button>
         <button onClick={toogleSortByCountry}>
           {sorting === SortBy.Country ? 'Unsort by country' : 'Sort by country'}
         </button>
-        <button onClick={handleReset}>Reset users</button>
         <input
           style={{
             borderRadius: '10px',

@@ -99,7 +99,7 @@ export interface Picture {
 
 export enum SortBy {
   None = 'none',
-  FirstName = 'fisrt',
+  FirstName = 'first',
   LastName = 'last',
   Country = 'country'
 }
