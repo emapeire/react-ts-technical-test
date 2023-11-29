@@ -1,22 +1,58 @@
-import { Users } from '../types'
+import { SortBy, type Users } from '../types'
 
 interface Props {
   users: Users[]
   showColors: boolean
   deleteUser: (email: string) => void
+  changeSort: (sort: SortBy) => void
 }
 
-export default function UserList({ users, showColors, deleteUser }: Props) {
+export default function UserList({
+  users,
+  showColors,
+  deleteUser,
+  changeSort
+}: Props) {
   return (
     <div style={{ marginTop: '2rem' }}>
       <table width='100%'>
         <thead>
           <tr>
-            <th>Photo</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Country</th>
-            <th>Actions</th>
+            <th style={{ cursor: 'default' }}>Photo</th>
+            <th
+              style={{
+                cursor: 'pointer',
+                border: '1px solid gray',
+                borderRadius: '10px',
+                padding: '0.5rem'
+              }}
+              onClick={() => changeSort(SortBy.FirstName)}
+            >
+              First Name
+            </th>
+            <th
+              style={{
+                cursor: 'pointer',
+                border: '1px solid gray',
+                borderRadius: '10px',
+                padding: '0.5rem'
+              }}
+              onClick={() => changeSort(SortBy.LastName)}
+            >
+              Last Name
+            </th>
+            <th
+              style={{
+                cursor: 'pointer',
+                border: '1px solid gray',
+                borderRadius: '10px',
+                padding: '0.5rem'
+              }}
+              onClick={() => changeSort(SortBy.Country)}
+            >
+              Country
+            </th>
+            <th style={{ cursor: 'default' }}>Actions</th>
           </tr>
         </thead>
         <tbody className={showColors ? 'table--showColors' : ''}>

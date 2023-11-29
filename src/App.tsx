@@ -47,6 +47,10 @@ export default function App() {
     setUsers(originalUsers.current)
   }
 
+  const handleChangeSort = (sort: SortBy) => {
+    setSorting(sort)
+  }
+
   useEffect(() => {
     fetch(`${API_URL}`)
       .then((res) => res.json() as Promise<APIResults>)
@@ -84,6 +88,7 @@ export default function App() {
       </header>
       <main>
         <UserList
+          changeSort={handleChangeSort}
           deleteUser={handleDelete}
           showColors={showColors}
           users={sortedUsers}
