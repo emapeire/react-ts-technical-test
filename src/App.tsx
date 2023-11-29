@@ -55,6 +55,7 @@ export default function App() {
   }
 
   const handleChangeSort = (sort: SortBy) => {
+    if (sort === sorting) return setSorting(SortBy.None)
     setSorting(sort)
   }
 
