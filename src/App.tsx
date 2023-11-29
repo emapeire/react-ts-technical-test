@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { API_URL } from './constants'
-import { type APIResults, type Users } from './types'
+import { SortBy, type APIResults, type Users } from './types'
 import UserList from './components/UserList'
 
-function App() {
+export default function App() {
   const [users, setUsers] = useState<Users[]>([])
   const [showColors, setShowColors] = useState(false)
-  const [sortByCountry, setSortByCountry] = useState(false)
+  const [sorting, setSorting] = useState<SortBy>(SortBy.None)
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
+
   const originalUsers = useRef<Users[]>([])
 
   const toggleColor = () => {
@@ -16,7 +17,7 @@ function App() {
   }
 
   const toogleSortByCountry = () => {
-    setSortByCountry((prevState) => !prevState)
+    setSorting(sorting === SortBy.Country ? SortBy.None : SortBy.Country)
   }
 
   const filteredUsersByCountry = useMemo(() => {
@@ -30,12 +31,12 @@ function App() {
   }, [filterCountry, users])
 
   const sortedUsers = useMemo(() => {
-    return sortByCountry
+    return sorting === SortBy.Country
       ? [...filteredUsersByCountry].sort((a, b) => {
           return a.location.country.localeCompare(b.location.country)
         })
       : filteredUsersByCountry
-  }, [sortByCountry, filteredUsersByCountry])
+  }, [sorting, filteredUsersByCountry])
 
   const handleDelete = (email: string) => {
     const filteredUsers = users.filter((user) => user.email !== email)
@@ -66,7 +67,7 @@ function App() {
           {showColors ? 'Uncolor rows' : 'Color rows'}
         </button>
         <button onClick={toogleSortByCountry}>
-          {sortByCountry ? 'Unsort by country' : 'Sort by country'}
+          {sorting === SortBy.Country ? 'Unsort by country' : 'Sort by country'}
         </button>
         <button onClick={handleReset}>Reset users</button>
         <input
@@ -91,5 +92,3 @@ function App() {
     </div>
   )
 }
-
-export default App
