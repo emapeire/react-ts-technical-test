@@ -72,8 +72,11 @@ export default function App() {
         return res.json() as Promise<APIResults>
       })
       .then((res) => {
-        setUsers((prevUsers) => prevUsers.concat(res.results))
-        originalUsers.current = res.results
+        setUsers((prevUsers) => {
+          const newUsers = prevUsers.concat(res.results)
+          originalUsers.current = newUsers
+          return newUsers
+        })
       })
       .catch((err: SetStateAction<boolean>) => {
         setError(err)
@@ -118,11 +121,9 @@ export default function App() {
 
         {loading && <strong>Loading...</strong>}
 
-        {!loading && error && <strong>Something went wrong</strong>}
+        {error && <strong>Something went wrong</strong>}
 
-        {!loading && !error && sortedUsers.length === 0 && (
-          <strong>No users found</strong>
-        )}
+        {!error && sortedUsers.length === 0 && <strong>No users found</strong>}
 
         {!loading && !error && (
           <button
