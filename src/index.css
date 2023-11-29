@@ -25,7 +25,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -33,6 +33,12 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+strong {
+  display: flex;
+  justify-content: center;
+  margin: 2.5rem;
 }
 
 button {

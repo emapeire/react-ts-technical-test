@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { API_URL } from './constants'
 import { SortBy, type APIResults, type Users } from './types'
@@ -9,6 +9,8 @@ export default function App() {
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.None)
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
   const originalUsers = useRef<Users[]>([])
 
@@ -60,13 +62,22 @@ export default function App() {
   }
 
   useEffect(() => {
-    fetch(`${API_URL}`)
-      .then((res) => res.json() as Promise<APIResults>)
+    setLoading(true)
+    setError(false)
+
+    fetch(`${API_URL}10`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Something went wrong')
+        return res.json() as Promise<APIResults>
+      })
       .then((res) => {
         setUsers(res.results)
         originalUsers.current = res.results
       })
-      .catch((err) => console.log(err))
+      .catch((err: SetStateAction<boolean>) => {
+        setError(err)
+      })
+      .finally(() => setLoading(false))
   }, [])
 
   return (
@@ -95,12 +106,19 @@ export default function App() {
         />
       </header>
       <main>
-        <UserList
-          changeSort={handleChangeSort}
-          deleteUser={handleDelete}
-          showColors={showColors}
-          users={sortedUsers}
-        />
+        {loading && <strong>Loading...</strong>}
+        {!loading && error && <strong>Something went wrong</strong>}
+        {!loading && !error && sortedUsers.length === 0 && (
+          <strong>No users found</strong>
+        )}
+        {!loading && !error && sortedUsers.length > 0 && (
+          <UserList
+            changeSort={handleChangeSort}
+            deleteUser={handleDelete}
+            showColors={showColors}
+            users={sortedUsers}
+          />
+        )}
       </main>
     </div>
   )
