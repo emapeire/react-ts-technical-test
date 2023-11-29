@@ -4,6 +4,17 @@ import { API_URL } from './constants'
 import { SortBy, type APIResults, type Users } from './types'
 import UserList from './components/UserList'
 
+const fetchUsers = async (currentPage: number) => {
+  return await fetch(
+    `${API_URL}/api?results=10&seed=foobar&page=${currentPage}`
+  )
+    .then(async (res) => {
+      if (!res.ok) throw new Error('Something went wrong')
+      return (await res.json()) as Promise<APIResults>
+    })
+    .then((res) => res.results)
+}
+
 export default function App() {
   const [users, setUsers] = useState<Users[]>([])
   const [showColors, setShowColors] = useState(false)
@@ -66,14 +77,10 @@ export default function App() {
     setLoading(true)
     setError(false)
 
-    fetch(`${API_URL}/api?results=10&seed=foobar&page=${currentPage}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Something went wrong')
-        return res.json() as Promise<APIResults>
-      })
-      .then((res) => {
+    fetchUsers(currentPage)
+      .then((users) => {
         setUsers((prevUsers) => {
-          const newUsers = prevUsers.concat(res.results)
+          const newUsers = prevUsers.concat(users)
           originalUsers.current = newUsers
           return newUsers
         })
@@ -123,7 +130,9 @@ export default function App() {
 
         {error && <strong>Something went wrong</strong>}
 
-        {!error && sortedUsers.length === 0 && <strong>No users found</strong>}
+        {!loading && !error && sortedUsers.length === 0 && (
+          <strong>No users found</strong>
+        )}
 
         {!loading && !error && (
           <button
