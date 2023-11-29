@@ -11,6 +11,7 @@ export default function App() {
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const originalUsers = useRef<Users[]>([])
 
@@ -65,20 +66,20 @@ export default function App() {
     setLoading(true)
     setError(false)
 
-    fetch(`${API_URL}10`)
+    fetch(`${API_URL}/api?results=10&seed=foobar&page=${currentPage}`)
       .then((res) => {
         if (!res.ok) throw new Error('Something went wrong')
         return res.json() as Promise<APIResults>
       })
       .then((res) => {
-        setUsers(res.results)
+        setUsers((prevUsers) => prevUsers.concat(res.results))
         originalUsers.current = res.results
       })
       .catch((err: SetStateAction<boolean>) => {
         setError(err)
       })
       .finally(() => setLoading(false))
-  }, [])
+  }, [currentPage])
 
   return (
     <div>
@@ -106,18 +107,33 @@ export default function App() {
         />
       </header>
       <main>
-        {loading && <strong>Loading...</strong>}
-        {!loading && error && <strong>Something went wrong</strong>}
-        {!loading && !error && sortedUsers.length === 0 && (
-          <strong>No users found</strong>
-        )}
-        {!loading && !error && sortedUsers.length > 0 && (
+        {sortedUsers.length > 0 && (
           <UserList
             changeSort={handleChangeSort}
             deleteUser={handleDelete}
             showColors={showColors}
             users={sortedUsers}
           />
+        )}
+
+        {loading && <strong>Loading...</strong>}
+
+        {!loading && error && <strong>Something went wrong</strong>}
+
+        {!loading && !error && sortedUsers.length === 0 && (
+          <strong>No users found</strong>
+        )}
+
+        {!loading && !error && (
+          <button
+            style={{
+              margin: '2rem',
+              paddingInline: '5rem'
+            }}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Load more results
+          </button>
         )}
       </main>
     </div>
