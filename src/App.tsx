@@ -46,9 +46,9 @@ export default function App() {
     })
   }, [sorting, filteredUsers])
 
+  // TODO! implement delete user
   const handleDelete = (email: string) => {
-    // const filteredUsers = users.filter((user) => user.email !== email)
-    // setUsers(filteredUsers)
+    console.log('delete', email)
   }
 
   const handleReset = () => {

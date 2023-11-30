@@ -11,6 +11,7 @@ export default function useUsers() {
       queryKey: ['users'],
       queryFn: fetchUsers,
       getNextPageParam: (lastPage) => lastPage.nextPage,
+      refetchOnWindowFocus: false,
       initialPageParam: 1
     })
 
