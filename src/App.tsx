@@ -2,24 +2,11 @@ import { useMemo, useState } from 'react'
 import './App.css'
 import { SortBy, type Users } from './types'
 import UserList from './components/UserList'
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { fetchUsers } from './api'
+import useUsers from './hook/useUsers'
 
 export default function App() {
-  const { isLoading, isError, data, refetch, fetchNextPage, hasNextPage } =
-    useInfiniteQuery<{
-      nextPage?: number
-      users: Users[]
-    }>({
-      queryKey: ['users'],
-      queryFn: fetchUsers,
-      getNextPageParam: (lastPage) => lastPage.nextPage,
-      initialPageParam: 1
-    })
-
-  const users = useMemo(() => {
-    return data?.pages?.flatMap((page) => page.users) ?? []
-  }, [data])
+  const { isLoading, isError, users, refetch, fetchNextPage, hasNextPage } =
+    useUsers()
 
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.None)
