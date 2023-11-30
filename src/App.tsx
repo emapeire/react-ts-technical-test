@@ -17,7 +17,9 @@ export default function App() {
       initialPageParam: 1
     })
 
-  const users: Users[] = data?.pages?.flatMap((page) => page.users) ?? []
+  const users = useMemo(() => {
+    return data?.pages?.flatMap((page) => page.users) ?? []
+  }, [data])
 
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.None)
