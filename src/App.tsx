@@ -13,7 +13,8 @@ export default function App() {
     }>({
       queryKey: ['users'],
       queryFn: fetchUsers,
-      getNextPageParam: (lastPage) => lastPage.nextPage
+      getNextPageParam: (lastPage) => lastPage.nextPage,
+      initialPageParam: 1
     })
 
   const users: Users[] = data?.pages?.flatMap((page) => page.users) ?? []
