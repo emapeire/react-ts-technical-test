@@ -3,6 +3,7 @@ import './App.css'
 import { SortBy, type Users } from './types'
 import UserList from './components/UserList'
 import useUsers from './hook/useUsers'
+import Results from './components/Results'
 
 export default function App() {
   const { isLoading, isError, users, refetch, fetchNextPage, hasNextPage } =
@@ -62,6 +63,7 @@ export default function App() {
   return (
     <div>
       <h1>User Table</h1>
+      <Results />
       <header
         style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}
       >
