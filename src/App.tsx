@@ -1,30 +1,26 @@
-import { SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import './App.css'
-import { API_URL } from './constants'
-import { SortBy, type APIResults, type Users } from './types'
+import { SortBy, type Users } from './types'
 import UserList from './components/UserList'
-
-const fetchUsers = async (currentPage: number) => {
-  return await fetch(
-    `${API_URL}/api?results=10&seed=foobar&page=${currentPage}`
-  )
-    .then(async (res) => {
-      if (!res.ok) throw new Error('Something went wrong')
-      return (await res.json()) as Promise<APIResults>
-    })
-    .then((res) => res.results)
-}
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { fetchUsers } from './api'
 
 export default function App() {
-  const [users, setUsers] = useState<Users[]>([])
+  const { isLoading, isError, data, refetch, fetchNextPage, hasNextPage } =
+    useInfiniteQuery<{
+      nextPage?: number
+      users: Users[]
+    }>({
+      queryKey: ['users'],
+      queryFn: fetchUsers,
+      getNextPageParam: (lastPage) => lastPage.nextPage
+    })
+
+  const users: Users[] = data?.pages?.flatMap((page) => page.users) ?? []
+
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.None)
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const originalUsers = useRef<Users[]>([])
 
   const toggleColor = () => {
     setShowColors(!showColors)
@@ -44,7 +40,7 @@ export default function App() {
       : users
   }, [filterCountry, users])
 
-  const sortedUsers = useMemo(() => {
+  const sortedUsers: Users[] = useMemo(() => {
     if (sorting === SortBy.None) return filteredUsers
 
     const compareProperties: Record<string, (user: Users) => string> = {
@@ -60,36 +56,18 @@ export default function App() {
   }, [sorting, filteredUsers])
 
   const handleDelete = (email: string) => {
-    const filteredUsers = users.filter((user) => user.email !== email)
-    setUsers(filteredUsers)
+    // const filteredUsers = users.filter((user) => user.email !== email)
+    // setUsers(filteredUsers)
   }
 
   const handleReset = () => {
-    setUsers(originalUsers.current)
+    void refetch()
   }
 
   const handleChangeSort = (sort: SortBy) => {
     if (sort === sorting) return setSorting(SortBy.None)
     setSorting(sort)
   }
-
-  useEffect(() => {
-    setLoading(true)
-    setError(false)
-
-    fetchUsers(currentPage)
-      .then((users) => {
-        setUsers((prevUsers) => {
-          const newUsers = prevUsers.concat(users)
-          originalUsers.current = newUsers
-          return newUsers
-        })
-      })
-      .catch((err: SetStateAction<boolean>) => {
-        setError(err)
-      })
-      .finally(() => setLoading(false))
-  }, [currentPage])
 
   return (
     <div>
@@ -126,24 +104,29 @@ export default function App() {
           />
         )}
 
-        {loading && <strong>Loading...</strong>}
+        {isLoading && <strong>Loading...</strong>}
 
-        {error && <strong>Something went wrong</strong>}
+        {isError && <strong>Something went wrong</strong>}
 
-        {!loading && !error && sortedUsers.length === 0 && (
+        {!isLoading && !isError && sortedUsers.length === 0 && (
           <strong>No users found</strong>
         )}
 
-        {!loading && !error && (
+        {!isLoading && !isError && hasNextPage === true && (
           <button
             style={{
               margin: '2rem',
               paddingInline: '5rem'
             }}
-            onClick={() => setCurrentPage(currentPage + 1)}
+            onClick={() => {
+              void fetchNextPage()
+            }}
           >
             Load more results
           </button>
+        )}
+        {!isLoading && !isError && hasNextPage === false && (
+          <strong>No more results</strong>
         )}
       </main>
     </div>
