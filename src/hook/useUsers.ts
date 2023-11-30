@@ -1,7 +1,6 @@
 import { fetchUsers } from '../api'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { Users } from '../types'
-import { useMemo } from 'react'
+import { type Users } from '../types'
 
 export default function useUsers() {
   const { isLoading, isError, data, refetch, fetchNextPage, hasNextPage } =
@@ -15,9 +14,7 @@ export default function useUsers() {
       initialPageParam: 1
     })
 
-  const users = useMemo(() => {
-    return data?.pages?.flatMap((page) => page.users) ?? []
-  }, [data])
+  const users = data?.pages?.flatMap((page) => page.users) ?? []
 
   return {
     isLoading,
